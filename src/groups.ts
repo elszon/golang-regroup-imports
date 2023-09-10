@@ -6,7 +6,7 @@ export interface Group {
 
 export class Std implements Group {
     priority(): number {
-        return Number.MAX_VALUE;
+        return Number.MAX_VALUE - 2;
     }
     match(s: string): boolean {
         return !s.includes('.');
@@ -24,7 +24,7 @@ export class Blank implements Group {
 
 export class Dot implements Group {
     priority(): number {
-        return Number.MAX_VALUE - 2;
+        return Number.MAX_VALUE;
     }
     match(s: string): boolean {
         return s.startsWith('. ');
@@ -53,7 +53,7 @@ export class Prefix implements Group {
     match(s: string): boolean {
         const i = s.indexOf('"');
         const idx = i < 0 ? 0 : i + 1
-        const subs = s.substring(idx)
+        const subs = s.slice(idx)
         return subs.startsWith(this.prefix);
     }
 }
