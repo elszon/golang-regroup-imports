@@ -4,6 +4,15 @@
   "description": "Group golang imports on save",
   "version": "0.0.1",
   "publisher": "elszon",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/elszon/go-group-imports/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elszon/go-group-imports.git"
+  },
+  "bugs": {
+    "url": "https://github.com/elszon/go-group-imports/issues"
+  },
   "icon": "assets/logo.png",
   "engines": {
     "vscode": "^1.81.0"
