@@ -10,8 +10,8 @@ export class GroupImports {
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
-        this.outputChannel = vscode.window.createOutputChannel('Go Group imports');
-        const enabled = vscode.workspace.getConfiguration('groupImports').get<boolean>('onSave');
+        this.outputChannel = vscode.window.createOutputChannel('Go Regroup imports');
+        const enabled = vscode.workspace.getConfiguration('regroupImports').get<boolean>('onSave');
         this.isEnabled = enabled !== undefined ? enabled : false;
     }
 
@@ -93,7 +93,7 @@ export class GroupImports {
     }
 
     public message(m?: string) {
-        m = m || `on save: ${this.isEnabled ? 'enabled' : 'disabled'}.`;
+        m = m || `on save: ${this.isEnabled ? 'enabled' : 'disabled'}`;
         this.outputChannel.appendLine(m);
     }
 }

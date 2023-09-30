@@ -12,11 +12,11 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidSaveTextDocument(e => { ext.run(e) })
 
 
-	vscode.commands.registerCommand('extension.goGroupImports.toggle', () => {
+	vscode.commands.registerCommand('extension.goRegroupImports.toggle', () => {
 		ext.isEnabled = !ext.isEnabled;
 	});
 
-	console.log('Congratulations, your extension "go-group-imports" is now active!');
+	console.log('Congratulations, your extension "golang-regroup-imports" is now active!');
 }
 
 // This method is called when your extension is deactivated

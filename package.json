@@ -1,17 +1,17 @@
 {
-  "name": "go-group-imports",
-  "displayName": "Go group imports",
-  "description": "Group golang imports on save",
-  "version": "0.0.1",
+  "name": "golang-regroup-imports",
+  "displayName": "Golang regroup imports",
+  "description": "Regroup golang imports on save",
+  "version": "0.0.2",
   "publisher": "elszon",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/elszon/go-group-imports/blob/master/README.md",
+  "homepage": "https://github.com/elszon/golang-regroup-imports/blob/master/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elszon/go-group-imports.git"
+    "url": "https://github.com/elszon/golang-regroup-imports.git"
   },
   "bugs": {
-    "url": "https://github.com/elszon/go-group-imports/issues"
+    "url": "https://github.com/elszon/golang-regroup-imports/issues"
   },
   "icon": "assets/logo.png",
   "engines": {
@@ -27,17 +27,17 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.goGroupImports.toggle",
-        "title": "Go Group Imports toggle"
+        "command": "extension.goRegroupImports.toggle",
+        "title": "Go Regroup Imports toggle"
       }
     ],
     "configuration": {
-      "title": "Go Group Imports",
+      "title": "Go Regroup Imports",
       "properties": {
-        "groupImports.onSave": {
+        "regroupImports.onSave": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically group golang imports on save."
+          "description": "Automatically regroup golang imports on save."
         }
       }
     }
