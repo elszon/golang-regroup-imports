@@ -1,13 +1,13 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import * as regroup from '../../regroup';
+import * as regroup from '../../importRegrouper';
 import * as groups from '../../groups';
 
 suite('Regroup Test Suite', () => {
     vscode.window.showInformationMessage('Start all tests.');
 
     test('Default group ordering', () => {
-        const get = regroup.GoImportsRegrouper.buildGroups();
+        const get = regroup.GoImportsRegrouper.buildImportGroups();
         assert.equal(get.length, 4);
         assert.equal(get[0].g.priority(), (new groups.Std()).priority());
         assert.equal(get[1].g.priority(), (new groups.Blank()).priority());
@@ -16,7 +16,7 @@ suite('Regroup Test Suite', () => {
     });
 
     test('Custom group ordering', () => {
-        const get = regroup.GoImportsRegrouper.buildGroups(new Array<groups.Group>(
+        const get = regroup.GoImportsRegrouper.buildImportGroups(new Array<groups.Group>(
             new groups.Std(), new groups.Prefix("first"), new groups.Prefix("second")
         ));
         assert.equal(get.length, 4);
@@ -36,7 +36,7 @@ suite('Regroup Test Suite', () => {
 
 
         const r = new regroup.GoImportsRegrouper();
-        const regrouped = r.run(imports)
+        const regrouped = r.group(imports)
 
         assert.deepEqual(regrouped[0], [
             '"testing"',
@@ -59,7 +59,7 @@ suite('Regroup Test Suite', () => {
         const r = new regroup.GoImportsRegrouper(new Array<groups.Group>(
             new groups.Std(), new groups.Default(), new groups.Prefix("github.com/elszon/group-imports")
         ));
-        const regrouped = r.run(imports)
+        const regrouped = r.group(imports)
 
         assert.deepEqual(regrouped[0], [
             '"testing"',
@@ -90,7 +90,7 @@ suite('Regroup Test Suite', () => {
 
 
         const r = new regroup.GoImportsRegrouper();
-        const regrouped = r.run(imports)
+        const regrouped = r.group(imports)
 
         assert.deepEqual(regrouped[0], [
             '"math"',

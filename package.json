@@ -2,7 +2,7 @@
   "name": "golang-regroup-imports",
   "displayName": "Golang regroup imports",
   "description": "Regroup golang imports on save",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "elszon",
   "license": "Apache-2.0",
   "homepage": "https://github.com/elszon/golang-regroup-imports/blob/master/README.md",

@@ -11,10 +11,10 @@ export class GoImportsRegrouper {
     private importGroups: { g: groups.Group, id: number }[];
 
     constructor(g?: groups.Group[]) {
-        this.importGroups = GoImportsRegrouper.buildGroups(g)
+        this.importGroups = GoImportsRegrouper.buildImportGroups(g)
     }
 
-    static buildGroups(g?: groups.Group[]) {
+    static buildImportGroups(g?: groups.Group[]) {
         const importGroups = (() => {
             if (g) {
                 const importGroups = new Array<OrderedGroups>();
@@ -41,7 +41,7 @@ export class GoImportsRegrouper {
         return importGroups
     }
 
-    public run(lines: string[]) {
+    public group(lines: string[]) {
         const regrouped = new Array<string[]>(this.importGroups.length)
             .fill([]).map(() => new Array<string>());
 

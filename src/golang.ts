@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as regroup from './regroup'
+import * as regroup from './importRegrouper'
 import * as groups from './groups';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -57,14 +57,14 @@ export class GroupImports {
             return
         }
 
-        const r = this.buildRegrouper(goModule);
+        const regrouper = this.buildRegrouper(goModule);
 
         const imports = doc.getText(importRange);
-        const replacement = r.run(imports.split('\n'));
+        const replacement = regrouper.group(imports.split('\n'));
         const reorderedImports = createImportSection(replacement);
 
         if (imports != reorderedImports) {
-            edit.replace(doc.uri, importRange, createImportSection(replacement));
+            edit.replace(doc.uri, importRange, reorderedImports);
             vscode.workspace.applyEdit(edit).then(doc.save);
         }
 
