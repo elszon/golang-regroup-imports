@@ -2,7 +2,7 @@
   "name": "golang-regroup-imports",
   "displayName": "Golang regroup imports",
   "description": "Regroup golang imports on save",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "elszon",
   "license": "Apache-2.0",
   "homepage": "https://github.com/elszon/golang-regroup-imports/blob/master/README.md",
@@ -38,6 +38,11 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically regroup golang imports on save."
+        },
+        "regroupImports.organization": {
+          "type": "string",
+          "default": "",
+          "description": "Prefix which is used to create organization group. If not set it's discovered from module name which should be in format `github.com\\organization_name\\... ."
         }
       }
     }

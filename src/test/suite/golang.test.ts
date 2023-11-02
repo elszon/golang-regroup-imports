@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 import * as golang from '../../golang';
-import { group } from 'console';
 
 suite('Golang Test Suite', () => {
   vscode.window.showInformationMessage('Start all tests.');

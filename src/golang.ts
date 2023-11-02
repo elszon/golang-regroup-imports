@@ -7,11 +7,16 @@ import * as fs from 'fs';
 export class GroupImports {
     private outputChannel: vscode.OutputChannel;
     private context: vscode.ExtensionContext;
+    private orgPrefix: string;
 
-    constructor(context: vscode.ExtensionContext) {
+    constructor(context: vscode.ExtensionContext,
+        outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('Go Regroup imports'),
+        enabled = vscode.workspace.getConfiguration('regroupImports').get<boolean>('onSave'),
+        orgPrefix = vscode.workspace.getConfiguration('regroupImports').get<string>('organization')
+    ) {
         this.context = context;
-        this.outputChannel = vscode.window.createOutputChannel('Go Regroup imports');
-        const enabled = vscode.workspace.getConfiguration('regroupImports').get<boolean>('onSave');
+        this.outputChannel = outputChannel;
+        this.orgPrefix = orgPrefix !== undefined ? orgPrefix : "";
         this.isEnabled = enabled !== undefined ? enabled : false;
     }
 
@@ -43,21 +48,13 @@ export class GroupImports {
             return
         }
 
-        const workspaceFolders = () => {
-            if (vscode.workspace.workspaceFolders === undefined ||
-                vscode.workspace.workspaceFolders.length == 0) {
-                return Array<string>(0)
-            }
-            return vscode.workspace.workspaceFolders.map((f) => f.uri.path)
-        }
-
         const goModule = findProjectModule(doc.fileName, workspaceFolders());
         if (!goModule) {
             this.message("go module not found for file: " + doc.fileName);
             return
         }
 
-        const regrouper = this.buildRegrouper(goModule);
+        const regrouper = this.buildRegrouper(goModule, this.orgPrefix);
 
         const imports = doc.getText(importRange);
         const replacement = regrouper.group(imports.split('\n'));
@@ -71,7 +68,18 @@ export class GroupImports {
         this.message("done: " + doc.fileName);
     }
 
-    private buildRegrouper(projectModule: string) {
+    private buildRegrouper(projectModule: string, orgPrefix: string) {
+        if (orgPrefix.trim().length != 0) {
+            return new regroup.GoImportsRegrouper(new Array<groups.Group>(
+                new groups.Std(),
+                new groups.Default(),
+                new groups.Prefix(orgPrefix),
+                new groups.Prefix(projectModule),
+                new groups.Blank(),
+                new groups.Dot(),
+            ));
+        }
+
         const org = orgModule(projectModule)
         if (org) {
             return new regroup.GoImportsRegrouper(new Array<groups.Group>(
@@ -83,6 +91,7 @@ export class GroupImports {
                 new groups.Dot(),
             ));
         }
+
         return new regroup.GoImportsRegrouper(new Array<groups.Group>(
             new groups.Std(),
             new groups.Default(),
@@ -96,6 +105,14 @@ export class GroupImports {
         m = m || `on save: ${this.isEnabled ? 'enabled' : 'disabled'}`;
         this.outputChannel.appendLine(m);
     }
+}
+
+function workspaceFolders() {
+    if (vscode.workspace.workspaceFolders === undefined ||
+        vscode.workspace.workspaceFolders.length == 0) {
+        return Array<string>(0)
+    }
+    return vscode.workspace.workspaceFolders.map((f) => f.uri.path)
 }
 
 export function findImports(doc: string) {
