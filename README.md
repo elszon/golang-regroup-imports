@@ -1,4 +1,4 @@
-# go-group-imports
+# Golang regroup imports
 
 VSCode extension for separating imports in Go files into groups:
 
@@ -11,4 +11,8 @@ VSCode extension for separating imports in Go files into groups:
 
 ## Extension Settings
 
+> !NOTE
+> Setting are applied after vscode restart.
+
 * `regroupImports.onSave`: automatically group imports on save. Default value is `true`.
+* `regroupImports.organization`: organization prefix. Default value is empty string.
