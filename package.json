@@ -1,70 +1,69 @@
 {
-  "name": "golang-regroup-imports",
-  "displayName": "Golang regroup imports",
-  "description": "Regroup golang imports on save",
-  "version": "0.0.5",
-  "publisher": "elszon",
-  "license": "Apache-2.0",
-  "homepage": "https://github.com/elszon/golang-regroup-imports/blob/master/README.md",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/elszon/golang-regroup-imports.git"
-  },
-  "bugs": {
-    "url": "https://github.com/elszon/golang-regroup-imports/issues"
-  },
-  "icon": "assets/logo.png",
-  "engines": {
-    "vscode": "^1.81.0"
-  },
-  "categories": [
-    "Formatters"
-  ],
-  "activationEvents": [
-    "onLanguage:go"
-  ],
-  "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "extension.goRegroupImports.toggle",
-        "title": "Go Regroup Imports toggle"
-      }
+    "name": "golang-regroup-imports",
+    "displayName": "Golang regroup imports",
+    "description": "Regroup golang imports on save",
+    "version": "0.1.0",
+    "publisher": "elszon",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/elszon/golang-regroup-imports/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/elszon/golang-regroup-imports.git"
+    },
+    "bugs": {
+        "url": "https://github.com/elszon/golang-regroup-imports/issues"
+    },
+    "icon": "assets/logo.png",
+    "engines": {
+        "vscode": "^1.86.0"
+    },
+    "categories": [
+        "Formatters"
     ],
-    "configuration": {
-      "title": "Go Regroup Imports",
-      "properties": {
-        "regroupImports.onSave": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically regroup golang imports on save."
-        },
-        "regroupImports.organization": {
-          "type": "string",
-          "default": "",
-          "description": "Prefix which is used to create organization group. If not set it's discovered from module name which should be in format `github.com\\organization_name\\... ."
+    "activationEvents": [
+        "onLanguage:go"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.goRegroupImports.toggle",
+                "title": "Go Regroup Imports toggle"
+            }
+        ],
+        "configuration": {
+            "title": "Go Regroup Imports",
+            "properties": {
+                "regroupImports.onSave": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Automatically regroup golang imports on save."
+                },
+                "regroupImports.organization": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Prefix which is used to create organization group. If not set it's discovered from module name which should be in format `github.com\\organization_name\\... ."
+                }
+            }
         }
-      }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.86.0",
+        "@types/mocha": "^10.0.6",
+        "@types/node": "18.x",
+        "@typescript-eslint/eslint-plugin": "^7.0.2",
+        "@typescript-eslint/parser": "^7.0.2",
+        "eslint": "^8.56.0",
+        "typescript": "^5.3.3",
+        "@vscode/test-cli": "^0.0.6",
+        "@vscode/test-electron": "^2.3.9"
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.81.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
-    "@typescript-eslint/eslint-plugin": "^6.4.1",
-    "@typescript-eslint/parser": "^6.4.1",
-    "eslint": "^8.47.0",
-    "glob": "^10.3.3",
-    "mocha": "^10.2.0",
-    "typescript": "^5.1.6",
-    "@vscode/test-electron": "^2.3.4"
-  }
 }

@@ -68,25 +68,25 @@ export class GroupImports {
         this.message("done: " + doc.fileName);
     }
 
-    private buildRegrouper(projectModule: string, orgPrefix: string) {
+    private buildRegrouper(goModule: string, orgPrefix: string) {
         if (orgPrefix.trim().length != 0) {
             return new regroup.GoImportsRegrouper(new Array<groups.Group>(
                 new groups.Std(),
                 new groups.Default(),
                 new groups.Prefix(orgPrefix),
-                new groups.Prefix(projectModule),
+                new groups.Prefix(goModule),
                 new groups.Blank(),
                 new groups.Dot(),
             ));
         }
 
-        const org = orgModule(projectModule)
+        const org = orgModule(goModule)
         if (org) {
             return new regroup.GoImportsRegrouper(new Array<groups.Group>(
                 new groups.Std(),
                 new groups.Default(),
                 new groups.Prefix(org),
-                new groups.Prefix(projectModule),
+                new groups.Prefix(goModule),
                 new groups.Blank(),
                 new groups.Dot(),
             ));
@@ -95,7 +95,7 @@ export class GroupImports {
         return new regroup.GoImportsRegrouper(new Array<groups.Group>(
             new groups.Std(),
             new groups.Default(),
-            new groups.Prefix(projectModule),
+            new groups.Prefix(goModule),
             new groups.Blank(),
             new groups.Dot(),
         ));
@@ -146,27 +146,37 @@ export function findProjectModule(filepath: string, workspaceFolders: string[]) 
     const moduleRegex = /module (.*?)\n/;
 
     if (workspaceFolders.length == 0) {
-        return null
+        return undefined
     }
 
-    while (true) {
-        filepath = filepath.split(path.sep).slice(0, -1).join(path.sep);
-        if (!workspaceFolders.some((e) => filepath.startsWith(e))) {
-            return null
+    const workspaces = workspaceFolders.filter((e) => filepath.startsWith(e))
+    for (const w of workspaces) {
+        const gomodFilepath = w + '/go.mod';
+        if (!fs.existsSync(gomodFilepath)) {
+            continue
         }
-        const modFilepath = filepath + '/go.mod';
-        if (fs.existsSync(modFilepath)) {
-            const words = fs.readFileSync(modFilepath, 'utf-8');
 
-            const matches = moduleRegex.exec(words)
-            if (matches !== null && matches.length >= 1) {
-                return matches[1];
-            }
+        const gomod = fs.readFileSync(gomodFilepath, 'utf-8');
+
+        const module = moduleRegex.exec(gomod)
+        if (module !== null &&
+            module.length >= 1) {
+            return module[1];
         }
     }
 }
 
 export function orgModule(projectMod: string) {
+    const publicGitServices = ['gitlab.com', 'github.com', 'bitbucket.org', 'sourceforge.net'];
+
+    const publicProvider = publicGitServices.some((e) => projectMod.includes(e));
+
+    if (!publicProvider) {
+        const first = projectMod.indexOf('/');
+        if (first != -1) {
+            return projectMod.substring(0, first);
+        }
+    }
 
     const first = projectMod.indexOf('/');
     if (first == -1) {
