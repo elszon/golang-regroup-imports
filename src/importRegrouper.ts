@@ -17,15 +17,16 @@ export class GoImportsRegrouper {
     static buildImportGroups(g?: groups.Group[]) {
         const importGroups = (() => {
             if (g) {
-                const importGroups = new Array<OrderedGroups>();
+                const importGr = new Array<OrderedGroups>();
                 const hasDefaultGroup = !!g.find(gg => gg.priority() == (new groups.Default()).priority())
                 if (!hasDefaultGroup) {
                     g.push(new groups.Default())
                 }
-                for (let i in g) {
-                    importGroups.push({ g: g[i], id: Number(i) })
+                for (let i = 0; i < g.length; i++) {
+                    const og: OrderedGroups = { g: g[i], id: Number(i) };
+                    importGr.push(og)
                 }
-                return importGroups
+                return importGr
             } else {
                 return new Array<OrderedGroups>(
                     { g: new groups.Std(), id: 0 },

@@ -1,23 +1,37 @@
 import * as vscode from 'vscode';
 import * as regroup from './importRegrouper'
 import * as groups from './groups';
-import * as path from 'path';
 import * as fs from 'fs';
+
+
+enum LogLevel {
+    ERROR,
+    WARN,
+    INFO,
+    DEBUG,
+}
+
+type LogLevelStrings = keyof typeof LogLevel;
 
 export class GroupImports {
     private outputChannel: vscode.OutputChannel;
     private context: vscode.ExtensionContext;
     private orgPrefix: string;
+    private logLevel: LogLevel;
 
     constructor(context: vscode.ExtensionContext,
         outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('Go Regroup imports'),
         enabled = vscode.workspace.getConfiguration('regroupImports').get<boolean>('onSave'),
-        orgPrefix = vscode.workspace.getConfiguration('regroupImports').get<string>('organization')
+        orgPrefix = vscode.workspace.getConfiguration('regroupImports').get<string>('organization'),
+        logLevel = vscode.workspace.getConfiguration('regroupImports').get<LogLevelStrings>('logLevel'),
     ) {
         this.context = context;
         this.outputChannel = outputChannel;
         this.orgPrefix = orgPrefix !== undefined ? orgPrefix : "";
         this.isEnabled = enabled !== undefined ? enabled : false;
+        this.logLevel = logLevel !== undefined ? LogLevel[logLevel] : LogLevel.INFO;
+
+        this.outputChannel.appendLine("LogLevel: " + this.logLevel.toString())
     }
 
     public get isEnabled() {
@@ -26,13 +40,21 @@ export class GroupImports {
 
     public set isEnabled(value: boolean) {
         this.context.globalState.update('isEnabled', value);
-        this.message();
+        this.message(LogLevel.INFO);
+    }
+
+    public tryRun(doc: vscode.TextDocument) {
+        try {
+            this.run(doc)
+        } catch (e: any) {
+            this.message(LogLevel.ERROR, "run error: " + e.toString())
+        }
     }
 
     public run(doc: vscode.TextDocument) {
 
         if (doc.languageId != 'go') {
-            this.message("skip: " + doc.fileName);
+            this.message(LogLevel.DEBUG, "skip: " + doc.fileName);
             return
         }
 
@@ -40,36 +62,45 @@ export class GroupImports {
             return
         }
 
-        this.message("start: " + doc.fileName);
+        this.message(LogLevel.INFO, "start: " + doc.fileName);
 
         const edit = new vscode.WorkspaceEdit();
         const importRange = findImports(doc.getText());
         if (!importRange) {
+            this.message(LogLevel.INFO, "done (no imports to reorder): " + doc.fileName);
             return
         }
 
         const goModule = findProjectModule(doc.fileName, workspaceFolders());
         if (!goModule) {
-            this.message("go module not found for file: " + doc.fileName);
+            this.message(LogLevel.INFO, "go module not found for file: " + doc.fileName);
             return
         }
 
+        this.message(LogLevel.DEBUG, "go module: " + goModule);
+
         const regrouper = this.buildRegrouper(goModule, this.orgPrefix);
 
+
         const imports = doc.getText(importRange);
+        this.message(LogLevel.DEBUG, "to replace:\n" + imports)
+
         const replacement = regrouper.group(imports.split('\n'));
         const reorderedImports = createImportSection(replacement);
+        this.message(LogLevel.DEBUG, "replace by:\n" + reorderedImports)
 
         if (imports != reorderedImports) {
             edit.replace(doc.uri, importRange, reorderedImports);
             vscode.workspace.applyEdit(edit).then(doc.save);
         }
 
-        this.message("done: " + doc.fileName);
+        this.message(LogLevel.INFO, "done: " + doc.fileName);
     }
 
     private buildRegrouper(goModule: string, orgPrefix: string) {
         if (orgPrefix.trim().length != 0) {
+            this.message(LogLevel.DEBUG, "buildRegrouper: with org prefix");
+
             return new regroup.GoImportsRegrouper(new Array<groups.Group>(
                 new groups.Std(),
                 new groups.Default(),
@@ -82,6 +113,8 @@ export class GroupImports {
 
         const org = orgModule(goModule)
         if (org) {
+            this.message(LogLevel.DEBUG, "buildRegrouper: with prefix " + org);
+
             return new regroup.GoImportsRegrouper(new Array<groups.Group>(
                 new groups.Std(),
                 new groups.Default(),
@@ -92,6 +125,8 @@ export class GroupImports {
             ));
         }
 
+        this.message(LogLevel.DEBUG, "buildRegrouper: default");
+
         return new regroup.GoImportsRegrouper(new Array<groups.Group>(
             new groups.Std(),
             new groups.Default(),
@@ -101,9 +136,11 @@ export class GroupImports {
         ));
     }
 
-    public message(m?: string) {
-        m = m || `on save: ${this.isEnabled ? 'enabled' : 'disabled'}`;
-        this.outputChannel.appendLine(m);
+    public message(ll: LogLevel, m?: string) {
+        if (ll <= this.logLevel) {
+            m = m || `on save: ${this.isEnabled ? 'enabled' : 'disabled'}`;
+            this.outputChannel.appendLine(m);
+        }
     }
 }
 

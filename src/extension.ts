@@ -7,16 +7,16 @@ import * as golang from './golang';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	let ext = new golang.GroupImports(context)
+    let ext = new golang.GroupImports(context)
 
-	vscode.workspace.onDidSaveTextDocument(e => { ext.run(e) })
+    vscode.workspace.onDidSaveTextDocument(e => { ext.tryRun(e) })
 
 
-	vscode.commands.registerCommand('extension.goRegroupImports.toggle', () => {
-		ext.isEnabled = !ext.isEnabled;
-	});
+    vscode.commands.registerCommand('extension.goRegroupImports.toggle', () => {
+        ext.isEnabled = !ext.isEnabled;
+    });
 
-	console.log('Congratulations, your extension "golang-regroup-imports" is now active!');
+    console.log('Congratulations, your extension "golang-regroup-imports" is now active!');
 }
 
 // This method is called when your extension is deactivated
