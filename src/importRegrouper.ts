@@ -18,7 +18,7 @@ export class GoImportsRegrouper {
         const importGroups = (() => {
             if (g) {
                 const importGr = new Array<OrderedGroups>();
-                const hasDefaultGroup = !!g.find(gg => gg.priority() == (new groups.Default()).priority())
+                const hasDefaultGroup = !!g.find(gg => gg.priority() === (new groups.Default()).priority())
                 if (!hasDefaultGroup) {
                     g.push(new groups.Default())
                 }

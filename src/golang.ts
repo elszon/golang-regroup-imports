@@ -53,7 +53,7 @@ export class GroupImports {
 
     public run(doc: vscode.TextDocument) {
 
-        if (doc.languageId != 'go') {
+        if (doc.languageId !== 'go') {
             this.message(LogLevel.DEBUG, "skip: " + doc.fileName);
             return
         }
@@ -89,7 +89,7 @@ export class GroupImports {
         const reorderedImports = createImportSection(replacement);
         this.message(LogLevel.DEBUG, "replace by:\n" + reorderedImports)
 
-        if (imports != reorderedImports) {
+        if (imports !== reorderedImports) {
             edit.replace(doc.uri, importRange, reorderedImports);
             vscode.workspace.applyEdit(edit).then(doc.save);
         }
@@ -98,7 +98,7 @@ export class GroupImports {
     }
 
     private buildRegrouper(goModule: string, orgPrefix: string) {
-        if (orgPrefix.trim().length != 0) {
+        if (orgPrefix.trim().length !== 0) {
             this.message(LogLevel.DEBUG, "buildRegrouper: with org prefix");
 
             return new regroup.GoImportsRegrouper(new Array<groups.Group>(
@@ -146,7 +146,7 @@ export class GroupImports {
 
 function workspaceFolders() {
     if (vscode.workspace.workspaceFolders === undefined ||
-        vscode.workspace.workspaceFolders.length == 0) {
+        vscode.workspace.workspaceFolders.length === 0) {
         return Array<string>(0)
     }
     return vscode.workspace.workspaceFolders.map((f) => f.uri.path)
@@ -182,7 +182,7 @@ export function findImports(doc: string) {
 export function findProjectModule(filepath: string, workspaceFolders: string[]) {
     const moduleRegex = /module (.*?)\n/;
 
-    if (workspaceFolders.length == 0) {
+    if (workspaceFolders.length === 0) {
         return undefined
     }
 
@@ -210,18 +210,18 @@ export function orgModule(projectMod: string) {
 
     if (!publicProvider) {
         const first = projectMod.indexOf('/');
-        if (first != -1) {
+        if (first !== -1) {
             return projectMod.substring(0, first);
         }
     }
 
     const first = projectMod.indexOf('/');
-    if (first == -1) {
+    if (first === -1) {
         return null
     }
 
     const second = projectMod.indexOf('/', first + 1);
-    if (second == -1) {
+    if (second === -1) {
         return null
     }
 
@@ -232,7 +232,7 @@ export function createImportSection(g: string[][]) {
     let first = true;
     let out = "";
     for (let r of g.slice()) {
-        if (r.length == 0) {
+        if (r.length === 0) {
             continue
         }
         if (!first) {

@@ -7,9 +7,9 @@ import * as golang from './golang';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    let ext = new golang.GroupImports(context)
+    let ext = new golang.GroupImports(context);
 
-    vscode.workspace.onDidSaveTextDocument(e => { ext.tryRun(e) })
+    vscode.workspace.onDidSaveTextDocument(e => { ext.tryRun(e); });
 
 
     vscode.commands.registerCommand('extension.goRegroupImports.toggle', () => {
