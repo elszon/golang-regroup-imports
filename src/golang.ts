@@ -99,7 +99,7 @@ export class GroupImports {
 
     private buildRegrouper(goModule: string, orgPrefix: string) {
         if (orgPrefix.trim().length !== 0) {
-            this.message(LogLevel.DEBUG, "buildRegrouper: with org prefix");
+            this.message(LogLevel.DEBUG, "buildRegrouper: with org prefix: " + orgPrefix + " and mod: " + goModule);
 
             return new regroup.GoImportsRegrouper(new Array<groups.Group>(
                 new groups.Std(),
@@ -113,7 +113,7 @@ export class GroupImports {
 
         const org = orgModule(goModule)
         if (org) {
-            this.message(LogLevel.DEBUG, "buildRegrouper: with prefix " + org);
+            this.message(LogLevel.DEBUG, "buildRegrouper: with org: " + org + " and mod: " + goModule);
 
             return new regroup.GoImportsRegrouper(new Array<groups.Group>(
                 new groups.Std(),
@@ -125,7 +125,7 @@ export class GroupImports {
             ));
         }
 
-        this.message(LogLevel.DEBUG, "buildRegrouper: default");
+        this.message(LogLevel.DEBUG, "buildRegrouper: default with org: " + goModule);
 
         return new regroup.GoImportsRegrouper(new Array<groups.Group>(
             new groups.Std(),

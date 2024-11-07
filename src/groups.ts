@@ -4,39 +4,23 @@ export interface Group {
     match(s: string): boolean
 }
 
-export class Std implements Group {
-    priority(): number {
-        return Number.MAX_VALUE - 2;
-    }
-    match(s: string): boolean {
-        return !s.includes('.');
-    }
-}
-
-export class Blank implements Group {
-    priority(): number {
-        return Number.MAX_VALUE - 1;
-    }
-    match(s: string): boolean {
-        return s.startsWith('_ ');
-    }
-}
+const MAX_PRIORITY = 2000
 
 export class Dot implements Group {
     priority(): number {
-        return Number.MAX_VALUE;
+        return MAX_PRIORITY;
     }
     match(s: string): boolean {
         return s.startsWith('. ');
     }
 }
 
-export class Default implements Group {
+export class Blank implements Group {
     priority(): number {
-        return Number.MIN_VALUE;
+        return MAX_PRIORITY - 1;
     }
     match(s: string): boolean {
-        return true;
+        return s.startsWith('_ ');
     }
 }
 
@@ -48,12 +32,30 @@ export class Prefix implements Group {
     }
 
     priority(): number {
-        return this.prefix.length;
+        return MAX_PRIORITY / 2 + this.prefix.length;
     }
     match(s: string): boolean {
         const i = s.indexOf('"');
         const idx = i < 0 ? 0 : i + 1
         const subs = s.slice(idx)
         return subs.startsWith(this.prefix);
+    }
+}
+
+export class Std implements Group {
+    priority(): number {
+        return MAX_PRIORITY / 2;
+    }
+    match(s: string): boolean {
+        return !s.includes('.');
+    }
+}
+
+export class Default implements Group {
+    priority(): number {
+        return 0;
+    }
+    match(s: string): boolean {
+        return true;
     }
 }
