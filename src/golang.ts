@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as regroup from './importRegrouper'
 import * as groups from './groups';
 import * as fs from 'fs';
+import * as path from 'path';
 
 
 enum LogLevel {
@@ -17,18 +18,21 @@ export class GroupImports {
     private outputChannel: vscode.OutputChannel;
     private context: vscode.ExtensionContext;
     private orgPrefix: string;
+    private organizationOnly: boolean;
     private logLevel: LogLevel;
 
     constructor(context: vscode.ExtensionContext,
         outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('Go Regroup imports'),
         enabled = vscode.workspace.getConfiguration('regroupImports').get<boolean>('onSave'),
         orgPrefix = vscode.workspace.getConfiguration('regroupImports').get<string>('organization'),
+        organizationOnly = vscode.workspace.getConfiguration('regroupImports').get<boolean>('organizationOnly'),
         logLevel = vscode.workspace.getConfiguration('regroupImports').get<LogLevelStrings>('logLevel'),
     ) {
         this.context = context;
         this.outputChannel = outputChannel;
         this.orgPrefix = orgPrefix !== undefined ? orgPrefix : "";
         this.isEnabled = enabled !== undefined ? enabled : false;
+        this.organizationOnly = organizationOnly !== undefined ? organizationOnly : false;
         this.logLevel = logLevel !== undefined ? LogLevel[logLevel] : LogLevel.INFO;
 
         this.outputChannel.appendLine("LogLevel: " + this.logLevel.toString())
@@ -70,6 +74,7 @@ export class GroupImports {
             this.message(LogLevel.INFO, "done (no imports to reorder): " + doc.fileName);
             return
         }
+        this.message(LogLevel.DEBUG, "found import range in " + doc.fileName);
 
         const goModule = findProjectModule(doc.fileName, workspaceFolders());
         if (!goModule) {
@@ -79,7 +84,7 @@ export class GroupImports {
 
         this.message(LogLevel.DEBUG, "go module: " + goModule);
 
-        const regrouper = this.buildRegrouper(goModule, this.orgPrefix);
+        const regrouper = this.buildRegrouper(goModule, this.orgPrefix, this.organizationOnly);
 
 
         const imports = doc.getText(importRange);
@@ -97,7 +102,19 @@ export class GroupImports {
         this.message(LogLevel.INFO, "done: " + doc.fileName);
     }
 
-    private buildRegrouper(goModule: string, orgPrefix: string) {
+    private buildRegrouper(goModule: string, orgPrefix: string, organizationOnly: boolean) {
+        if (organizationOnly && orgPrefix.trim().length !== 0) {
+            this.message(LogLevel.DEBUG, "buildRegrouper: with org prefix: " + orgPrefix + " and no module");
+
+            return new regroup.GoImportsRegrouper(new Array<groups.Group>(
+                new groups.Std(),
+                new groups.Default(),
+                new groups.Prefix(orgPrefix),
+                new groups.Blank(),
+                new groups.Dot(),
+            ));
+        }
+
         if (orgPrefix.trim().length !== 0) {
             this.message(LogLevel.DEBUG, "buildRegrouper: with org prefix: " + orgPrefix + " and mod: " + goModule);
 
@@ -186,9 +203,11 @@ export function findProjectModule(filepath: string, workspaceFolders: string[]) 
         return undefined
     }
 
-    const workspaces = workspaceFolders.filter((e) => filepath.startsWith(e))
-    for (const w of workspaces) {
-        const gomodFilepath = w + '/go.mod';
+    let dir = path.dirname(filepath)
+
+    for (; workspaceFolders.filter((e) => dir.startsWith(e)).length > 0; dir = path.dirname(dir)) {
+        path.join
+        const gomodFilepath = path.join(dir, 'go.mod');
         if (!fs.existsSync(gomodFilepath)) {
             continue
         }

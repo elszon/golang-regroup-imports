@@ -2,7 +2,7 @@
     "name": "golang-regroup-imports",
     "displayName": "Golang regroup imports",
     "description": "Regroup golang imports on save",
-    "version": "0.1.2",
+    "version": "0.1.4",
     "publisher": "elszon",
     "license": "Apache-2.0",
     "homepage": "https://github.com/elszon/golang-regroup-imports/blob/master/README.md",
@@ -43,6 +43,11 @@
                     "type": "string",
                     "default": "",
                     "description": "Prefix which is used to create organization group. If not set it's discovered from module name which should be in format `github.com\\organization_name\\... ."
+                },
+                "regroupImports.organizationOnly": {
+                    "type": "boolean",
+                    "default": "",
+                    "description": "Build one group for organization that contains all modules prefixed with organization prefix."
                 },
                 "regroupImports.logLevel": {
                     "type": "string",
